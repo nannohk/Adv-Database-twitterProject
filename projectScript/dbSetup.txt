@@ -1,0 +1,24 @@
+drop table user;
+drop table tweet;
+
+
+create table user
+    (userID		            varchar2(50),
+	 userName				varchar2(50),
+	 userLocation		    varchar2(20),
+	 userCreationDate		varchar2(50),
+     userFollowers          int,
+     userFriends            int,
+	 primary key (userID)
+	);    
+
+create table tweet
+	(tweetId		varchar2(50), 
+	 tweet			varchar2(999999), 
+	 tweetDate		varchar2(50),
+	 language				varchar2(10),
+     userID         varchar2(50),
+	 primary key (tweetId),
+	 foreign key (userID) references user (userID)
+		on delete set null
+	);
