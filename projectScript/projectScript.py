@@ -45,30 +45,32 @@ if __name__ == '__main__':
 
     def manageData():
         cr = ChunkReader('j228')
-        iter = cr.get_records(228042)
-        # for ndx, record in iter:
-        #     J = json.dumps(record, indent=4)
-        #     print(J)
-
-        for i, (ndx, obj) in zip(range(1000), iter):
-            if 'text' in obj:
-                tweetId = obj['id_str']
-                tweet = obj['text']
-                tweetDate = obj['created_at']
-                userName = obj['user']['name']
-                userId = obj['user']['id_str']
-                userLocation = obj['user']['location']
-                userCreationDate = obj['user']['created_at']
-                followersCount = obj['user']['followers_count']
-                friendsCount = obj['user']['friends_count']
-                tweetLanguage = obj['lang']
-                # print(tweetId, tweet, tweetDate, userName, userId, userLocation, userCreationDate, followersCount,'\n')
-                # print(json.dumps(obj, indent=4))
-                cur.execute('INSERT INTO user (userId, userName, userLocation, userCreationDate, userFollowers,userFriends) VALUES (?,?,?,?,?,?)',
-                             (userId, userName, userLocation, userCreationDate, followersCount, friendsCount))
-
-                cur.execute('INSERT INTO tweet (tweetId, tweet, tweetDate, userId, language) VALUES (?,?,?,?,?)',
-                             (tweetId, tweet, tweetDate, userId, tweetLanguage))
+        for k in range(228042, 228099):
+             iter = cr.get_records(k)
+             for i, (ndx, obj) in zip(range(10000), iter):
+                    if 'text' in obj:
+                        tweetId = obj['id_str']
+                        tweet = obj['text']
+                        tweetDate = obj['created_at']
+                        userName = obj['user']['name']
+                        userId = obj['user']['id_str']
+                        userLocation = obj['user']['location']
+                        userCreationDate = obj['user']['created_at']
+                        followersCount = obj['user']['followers_count']
+                        friendsCount = obj['user']['friends_count']
+                        tweetLanguage = obj['lang']
+                        # print(tweetId, tweet, tweetDate, userName, userId, userLocation, userCreationDate, followersCount,'\n')
+                        # print(json.dumps(obj, indent=4))
+                        try:
+                            cur.execute('INSERT INTO user (userId, userName, userLocation, userCreationDate, userFollowers,userFriends) VALUES (?,?,?,?,?,?)',
+                                    (userId, userName, userLocation, userCreationDate, followersCount, friendsCount))
+                        except:
+                            pass
+                        try:
+                            cur.execute('INSERT INTO tweet (tweetId, tweet, tweetDate, userId, language) VALUES (?,?,?,?,?)',
+                                    (tweetId, tweet, tweetDate, userId, tweetLanguage))
+                        except:
+                            pass
         conn.commit()
 
 # Georaphical data of twitter users
@@ -82,21 +84,19 @@ if __name__ == '__main__':
                     writer.writerow(location[0].split(','))
                 except:
                     pass
-            writer.close()
+            # writer.close()
 
 
 # number of tweets per year
-
-
-    def getTweetsPerYear():
+    def getTweetsPerHour():
         cur.execute('select tweetDate from tweet')
         dates = cur.fetchall()
         with open('tweetTimes.csv', 'w') as blob:
             writer = csv.writer(blob)
             for date in dates:
-                year = date[0].split(' ')[-3]
+                year = date[0].split(' ')[-3].split(':')[0]
                 writer.writerow(year.split(','))
-            writer.close()
+            # writer.close()
 
 # language of tweets
     def getTweetLanguage():
@@ -106,7 +106,7 @@ if __name__ == '__main__':
             writer = csv.writer(blob)
             for language in languages:
                 writer.writerow(language[0].split(','))
-            writer.close()
+            # writer.close()
 
 # program execution
     # createDatabase()
@@ -118,7 +118,7 @@ if __name__ == '__main__':
     # getLocations()
 
 # Get the number of tweets per year
-    # getTweetsPerYear()
+    # getTweetsPerHour()
 
 # Get the language of the tweets
     # getTweetLanguage()
